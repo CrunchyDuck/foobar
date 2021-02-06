@@ -1,17 +1,10 @@
 class ChessBoardNode():
     def __init__(self, posx, posy):
-        self.h_cost = 0
-        self.g_cost = 0
-        self.f_cost = 0
-        self.open = False
+        self.distance = 0  # Jumps from the starting position.
+        self.closed = False
         self.neighbours = []
 
         self.pos = [posx, posy]  # Debugging purposes.
-
-    def update(self, h, g):
-        self.g_cost = g
-        self.h_cost = h
-        self.f_cost = g + h
 
 
 def in_list_bounds(list_size, pos):
@@ -50,20 +43,20 @@ def solution(src, dest):
     dest_y, dest_x = divmod(dest, board_size)
 
     open = []
-    closed = []
     board = [[ChessBoardNode(x, y) for x in range(board_size)] for y in range(board_size)]
     # All possible moves relative to the current position.
     neighbour_pos = [
-        [2, -1],  # Right
+        # Right
+        [2, -1],
         [2, 1],
-
-        [1, 2],  # Down
+        # Down
+        [1, 2],
         [-1, 2],
-
-        [-2, -1],  # Left
+        # Left
+        [-2, -1],
         [-2, 1],
-
-        [1, -2],  # Up
+        # Up
+        [1, -2],
         [-1, -2]
     ]
 
@@ -81,8 +74,32 @@ def solution(src, dest):
                 if in_list_bounds([board_size, board_size], [target_x, target_y]):
                     this_node.neighbours.append(board[target_x][target_y])
 
-    open.append(src)
+    open.append(board[src_x][src_y])
+    target_node = board[dest_x][dest_y]
+
+    while len(open):
+        current_node = open[0]
+
+        # Find node with lowest distance from start.
+        for i in range(1, len(open)):
+            if open[i].distance < current_node.distance:
+                current_node = open[i]
+
+        open.remove(current_node)
+        current_node.closed = True
+
+        if current_node == target_node:
+            return current_node.distance
+
+        neighbour_distance = current_node.distance + 1  # How far the neighbour node is from src.
+        for neighbour in current_node.neighbours:
+            if neighbour.closed: continue
+
+            neighbour_open = neighbour in open
+            if not neighbour_open or neighbour.distance > neighbour_distance:
+                neighbour.distance = current_node.distance + 1
+                if not neighbour_open:
+                    open.append(neighbour)
 
 
-
-solution(0, 1)
+print solution(19, 36)
