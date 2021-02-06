@@ -1,0 +1,14 @@
+When first approaching the problem, I thought it wouldn't be that hard. Looking at the examples they'd given, I felt like I could see some pretty obvious relationships between the numbers.
+However, as I began to tackle the problem, I realized quickly how wrong I was. I had absolutely no clue how to solve this. I figured there'd be some kind of simple formula to figure it out, but I was very wrong.
+Making examples and figuring them out by hand wasn't giving me much insight, so I threw together a program that was capable of brute forcing the answer, by trying a gear and slightly adjusting each time.
+Pretty soon I found that there was a direct relation between the first gear and the last gear. It seemed, as the first gear got larger, the last did at the same rate.
+This was fantastic news! I set to work solving for this, verified my solution, and-
+[half_failed.png] half of the tests failed.
+
+I was completely unsure why. I ran through the code line by line... it seemed fine. 
+I messed around with it for about half an hour, before finding an oddity in one example; The last gear seemed to decrease when the first increased.
+I went back and checked an older example. As I first saw, last increased with first.
+What was different here?
+The difference was how many pegs were provided.
+When an odd number of pegs is provided, the relationship is linear.
+When an even number of pegs is provided, the relationship is inverse.
