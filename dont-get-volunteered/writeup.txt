@@ -1,0 +1,4 @@
+The moment I looked at this I knew I would have no trouble.
+Having a background in programming systems for games, I quickly assessed I was going to use some kind of A* pathfinding algorithm.
+I loaded up the old Sebastian Lague videos, chopped out anything that didn't fit in, and was done within an hour of starting, wondering if I'd somehow missed something.
+As I submitted the file, my muscles burned with anxiety, knowing I'd somehow gotten to the next level of the foobar challenge.

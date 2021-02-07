@@ -1,5 +1,6 @@
 When first approaching the problem, I thought it wouldn't be that hard. Looking at the examples they'd given, I felt like I could see some pretty obvious relationships between the numbers.
-However, as I began to tackle the problem, I realized quickly how wrong I was. I had absolutely no clue how to solve this. I figured there'd be some kind of simple formula to figure it out, but I was very wrong.
+However, as I began to tackle the problem, I realized quickly how wrong I was. I had absolutely no clue how to solve this. At first glance I figured there'd be some kind of simple formula to figure it out, but I was very wrong.
+Something that particularly tripped me up was is that they wanted the answer as a fraction representing the size of the first gear. This implied the gears could be non-integer sizes, but I couldn't imagine how that'd be the case.
 Making examples and figuring them out by hand wasn't giving me much insight, so I threw together a program that was capable of brute forcing the answer, by trying a gear and slightly adjusting each time.
 Pretty soon I found that there was a direct relation between the first gear and the last gear. It seemed, as the first gear got larger, the last did at the same rate.
 This was fantastic news! I set to work solving for this, verified my solution, and-
@@ -12,3 +13,21 @@ What was different here?
 The difference was how many pegs were provided.
 When an odd number of pegs is provided, the relationship is linear.
 When an even number of pegs is provided, the relationship is inverse.
+
+I put in some conditions to check for this, and some math to calculate the size of the first gear for either case.
+I still felt wrong about this. I was still using a method I consider brute force. I was sure there had to be some way to calculate this, some formula... And I still hadn't figured why they wanted the formula in a fraction.
+Even with these changes a few tests would fail. It had to be about the fraction.
+I paced my hall at 2AM, muttering to myself about impossible numbers.
+Soon however, I came upon the fraction of divinity: x over 3.
+It was possible for the first gear to be a decimal number if it was a multiple of two over three, and there were an even number of pegs.
+
+Accounting for this possibility, I verified my code again, to find a single test was failing. My stomach dropped. I was out of ideas.
+I reread the task over and over. Maybe... What if... Nothing came up.
+I scoured my code again, running random combinations in hopes of some sort of answer.
+It came. [30, 3]
+I hadn't simplified my fraction.
+
+Verify this change, and everything passed. Yet I wasn't content. What if there was some other small issue that more tests might bring up? I felt almost like I had cheated with this solution. I'd come up with no brilliant formula, no real understanding of why this was the answer. Maybe it was wrong...
+Submission, and success.
+
+This one was close, I thought. Maybe I wouldn't have it in me for the next one...
