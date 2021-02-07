@@ -1,0 +1,15 @@
+When I first read the question, I thought this was a joke. It seemed hilariously easy, it seemed like they gave the answer in the question itself. You just, get the right values, and XOR them together.
+I could do that in less than 20 lines. I could kick this out in less than 10 minutes.
+And so I did just that. I verified my answer, thinking this was some kind of prank. It was not. Three tests failed. On top of that, verification took much longer than it usually does.
+
+Hm... They did mention that the IDs only go up to 2 billion. I added in an if check to see if that was the problem, but again no.
+Alright, I think I see what's going on here, I told myself. I put together a few lines of code to just, waste time. A lot of time. I wanted to check if my answer had to be performant, not just right.
+One more test failed with this dallying. More time, more failures. Perfect.
+This confirmed my suspicion that there was some function to calculate this much, much faster.
+
+I tried to find this function on my own, increase the numbers in my XOR operation by 1 each time to see what patterns showed up.
+I did see one, some kind of repeating pattern every 4th number. This was definitely significant... But I didn't know how.
+To the Google machine I went, search for "Fast XOR". Lo and behold, there was a way. A way that would calculate it monsterously faster than I was doing.
+The math behind it is actually really cool and plays into the commutative property of XOR. An explanation can be found here: https://stackoverflow.com/questions/10670379/find-xor-of-all-numbers-in-a-given-range
+
+With this new math powered method, the verification process was sped through with no issues, and the task was done.
