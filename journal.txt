@@ -15,3 +15,7 @@ At least all this time spent running errands all over Commander Lambda's space s
 (After completing dont-get-volunteered)
 
 Awesome! Commander Lambda was so impressed by your efforts that you've been promoted to personal assistant. You'll be helping the Commander directly, which means you'll have access to all of Lambda's files -- including the ones on the LAMBCHOP doomsday device. This is the chance you've been waiting for. Can you use your new access to finally topple Commander Lambda's evil empire?
+
+(After requesting after previous task)
+
+Who the heck puts clover and coffee creamer in their tea? Commander Lambda, apparently. When you signed up to infiltrate the organization you didn't think you'd get such an up-close and personal look at these more... unusual tastes.
