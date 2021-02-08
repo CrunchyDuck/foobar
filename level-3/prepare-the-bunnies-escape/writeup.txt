@@ -1,0 +1,42 @@
+I'm lost.
+
+
+
+I tried to get Arix's help, but to no effect.
+
+I figured I needed to have a maze that was the full 20 by 20 big to test my algorithm on. However, I couldn't find anything that would give me a maze in text so I could convert it. Most of them had infinitely thin walls.
+I searched around and found a forum with a similar issue. Someone wonderfully pointed out that the infinitely thin sections that contained walls could just be seen as cells themselves.
+Using this knowledge, I generated a maze that was 10 by 10, and unpakced it into 0s and 1s for my algorithm to crunch.
+After filling out the maze though, I saw the line count was only 19.
+I don't know why, but this maze generator in particular had the vertical size one off every time. Nice. Good enough, anyway.
+I ran it through regex to format it into a multi dimensional list, and decided to profile to see if my method of indexing every cell was too slow for my liking. There's a lot it has to do after all.
+... What?
+Something's gotta be wrong.
+There's no way it finishes if 4 miliseconds. Right?
+I checked, breaking after all of the code, and indeed everything was properly indexed in such a short time.
+It showed me how costly iteration can really be.
+
+
+
+
+
+After implementing the new way of finding paths through walls, I was ready to test.
+I tried some stuff on my end, and they came back well. Off to verify...
+Darn. Two of five failed.
+I tried messing around with my algorithm, making it more lenient, making it far too lenient. Those two tests continued to fail.
+Maybe I'm overthinking this... Without any visuals of what's going on, I can only guess at why the algorithm isn't working.
+I figured I'd go the inelegant, digusting way of just removing every possible wall once and running over the maze.
+I made this, verified it, and those two tests continued to fail. What on earth could they be doing to my poor algorithm...
+Whatever's happening, something seems immediately flawed with my system some how. But if removing all walls systematically wouldn't solve it, what would?
+
+I figured I'd throw some test cases at it to see if anything bit. Shame they're such a pain to put together.
+Sure, why not, a two-column 15 row example. Why not.
+...
+IT FAILED! YES! This was great news! Now I could track down the issue!
+Quickly I located the problem - I wasn't properly getting the height of maps, meaning a few non-square maps would fail.
+With this patched, all tests passed with no issue.
+I cleaned up my code and submitted it.
+
+
+Going into this, I was certain this was my end. With the last challenge being about incredibly optimized XOR operations, I felt my time was up, a one-two-punch to finish me off.
+But I rose up from that despair and excelled my expectations, creating a system that is, as far as I can tell, completely unique.

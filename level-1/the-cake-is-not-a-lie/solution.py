@@ -1,52 +1,62 @@
-def try_gear(radius, differences):
+def rotate_string(string, offset):
     """
-    Tries a gear with a given radius.
+    Rotate a string an amount of times.
     Arguments:
-        radius - The radius of the first gear
-        differences - The distance between each set of pegs.
+        string - String to rotate
+        offset - How much to rotate the string.
 
-    Returns the radius of the gears for each peg.
+    Returns:
+        String after rotation has been applied.
     """
-    radiuses = [radius]
-    for i in range(len(differences)):
-        radius = differences[i] - radius
-        radiuses.append(radius)
-
-    return radiuses
+    size = len(string)
+    offset = offset % size  # Stops string slicing messing up.
+    rotated_string = string[-offset:] + string[:size-offset]
+    return rotated_string
 
 
-def solution(pegs):
-    unsolvable = [-1, -1]
-    # Calculate the gap between each of the pegs.
-    diff = []
-    for i in range(1, len(pegs)):
-        val_diff = abs(pegs[i] - pegs[i - 1])
-        diff.append(val_diff)
+def get_factors(number):
+    """
+    Returns a list of all of the positive factors of this number.
+    Arguments:
+        number - The number to get factors of.
 
-    # Boundaries for the first gear.
-    minimum = 2  # Gears must always be at least 1, and the last gear must be twice the first.
-    last_maximum = diff[-1] - 1  # Maximum size of the last gear.
-    maximum = min(diff[0] - 1, last_maximum * 2)
+    Returns:
+        list of positive integers
+    """
+    factors = []
+    for num in range(1, number+1):
+        if number % num == 0:
+            factors.append(num)
+    return factors
 
-    a= try_gear(2, diff)
-    b= try_gear(3, diff)
-    c= try_gear(4, diff)
 
-    # Try a dummy gear to figure out the difference between the first and last gear.
-    dummy = try_gear(2, diff)
-    number_distance = abs(dummy[0] - dummy[-1])  # The last gear should always be the distance to the first gear
-    first_gear = number_distance * 2
-    if first_gear > maximum:
-        return unsolvable
-    elif first_gear < minimum:
-        return unsolvable
+def solution(s):
+    string_size = len(s)
+    factors = get_factors(string_size)  # As the pattern must span the whole string, the answer must be a factor.
 
-    # Check all gears are valid sizes.
-    gear_configuration = try_gear(first_gear, diff)
-    for gear in gear_configuration:
-        if gear < 1:
-            return unsolvable
+    # The factor is the length of pattern we're going to attempt.
+    for factor in factors:
+        # We'll want to "rotate" the string/cake enough to make sure that every viable pattern
+        # of this size is tried.
+        for offset in range(factor):
+            s_rotated = rotate_string(s, offset)
+            pattern = s_rotated[0:factor]
+            pattern_fits = True
+            pattern_parts = string_size / factor
+            # Check if this pattern repeats through the string.
+            for i in range(pattern_parts):
+                start = i * factor
+                end = (i + 1) * factor
+                if s_rotated[start:end] != pattern:
+                    # If the pattern doesn't match up with any part of the string, it doesn't fit.
+                    pattern_fits = False
+                    break
 
-    return [first_gear, 1]
+            if pattern_fits:
+                return pattern_parts
 
-print solution([0, 9, 12, 15])
+
+print solution("abcabc")
+print solution("abcabcabcabcabcabcabcabc")
+print solution("bcabca")
+print solution("abcabc")
