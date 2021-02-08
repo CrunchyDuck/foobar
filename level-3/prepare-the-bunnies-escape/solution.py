@@ -1,11 +1,22 @@
+import heapq
+
 class MapNode:
     def __init__(self, is_wall, x, y):
         self.pos = [x, y]  # debug thing
-        self.src_distance = 0  # Jumps from the starting position.
+        self.src_distance = 1  # Jumps from the starting position.
         self.dest_distance = x + y  # How far from the end, if all walls were ignored.
+        self.cell_cost = 0
         self.closed = False
+        self.open = False  # This is much faster to check than iterating over the open list.
         self.wall = is_wall
         self.neighbours = []
+
+    def __cmp__(self, other):
+        return cmp(self.cell_cost, other.cell_cost)
+
+    def set_distance(self, dist):
+        self.src_distance = dist
+        self.cell_cost = self.src_distance + self.dest_distance
 
 
 def in_list_bounds(list_size, pos):
@@ -32,8 +43,8 @@ def solution(map):
         "width": len(map[0])
     }
     dest_x = dest_y = 0
-    src_x = map_size["width"]
-    src_y = map_size["height"]
+    src_x = map_size["width"] - 1
+    src_y = map_size["height"] - 1
 
     open_set = []
 
@@ -62,9 +73,9 @@ def solution(map):
 
 
     open_set.append(map_grid[src_x][src_y])
-    target_node = map_grid[dest_x][dest_y]
+    target_node = map_grid[dest_y][dest_x]
 
-    # Run through the full maze, documenting the distances of each cell.
+    # Run through the full maze from the start, documenting the distances of each cell.
     while len(open_set):
         # As I'm documenting all nodes, I don't need to set up a heap, just check all of them eventually.
         current_node = open_set[0]
@@ -72,20 +83,20 @@ def solution(map):
         open_set.remove(current_node)
         current_node.closed = True
 
-        src_distance = current_node.distance + 1  # How far the neighbour node is from src.
+        src_distance = current_node.src_distance + 1  # How far the neighbour node is from src.
         for neighbour in current_node.neighbours:
-            if neighbour.closed or neighbour.wall: continue
+            if neighbour.closed or neighbour.wall:
+                continue
 
-            neighbour_open = neighbour in open_set
-            if not neighbour_open or neighbour.distance > src_distance:
-                neighbour.distance = current_node.distance + 1
+            neighbour_open = neighbour.open
+            if not neighbour_open or neighbour.src_distance > src_distance:
+                neighbour.set_distance(src_distance)
                 if not neighbour_open:
+                    neighbour.open = True
                     open_set.append(neighbour)
 
 
     print "nya"
-
-
 
 
 # solution([[0, 1, 1, 0],
@@ -99,3 +110,28 @@ solution([[0, 0, 0, 0, 0, 0],
           [0, 1, 1, 1, 1, 1],
           [0, 1, 1, 1, 1, 1],
           [0, 0, 0, 0, 0, 0]])
+
+# chunky.
+solution(
+[
+[0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0],
+[0,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,0,1,0],
+[0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,1,0,1,0],
+[0,1,0,1,0,1,1,1,0,1,0,1,1,1,0,1,0,1,0],
+[0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0],
+[1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1],
+[0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0],
+[0,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1,0],
+[0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0],
+[0,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1],
+[0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0],
+[1,1,1,1,1,1,1,1,0,1,0,1,1,1,0,1,1,1,0],
+[0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0],
+[0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1],
+[0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1,0],
+[1,1,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0],
+[0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0,1,0],
+[0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,1,0],
+[0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0]
+]
+)
