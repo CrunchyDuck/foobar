@@ -43,6 +43,8 @@ def in_list_bounds(list_size, pos):
 
 
 def generate_map_grid(map, width, height):
+    print width
+    print height
     return [[MapNode(map[y][x], x, y) for y in range(height)] for x in range(width)]
 
 
@@ -65,7 +67,7 @@ def fill_neighbours(map_grid, neighbour_positions):
                     this_node.neighbours.append(map_grid[target_x][target_y])
 
 
-def solution2(map):
+def solution(map):
     map_size = {
         "height": len(map),
         "width": len(map[0])
@@ -163,7 +165,7 @@ def solution2(map):
     return best_speed
 
 
-def solution(map):
+def solution2(map):
     map_size = {
         "height": len(map),
         "width": len(map[0])
@@ -247,6 +249,20 @@ def solution(map):
 #           [1, 1, 0, 0],
 #           [1, 1, 1, 0]])
 
+print solution([
+    [0, 0],
+    [1, 0],
+    [1, 0],
+    [1, 0],
+    [0, 0],
+    [0, 1],
+    [1, 1],
+    [0, 0],
+    [0, 1],
+    [0, 1],
+    [0, 0]
+])
+
 # print solution([
 #     [0,0,0,1,0,0],
 #     [1,1,1,1,0,0],
@@ -290,4 +306,4 @@ def test():
     ]
     )
 
-cProfile.run("test()", sort="cumtime")
+#cProfile.run("test()", sort="cumtime")
