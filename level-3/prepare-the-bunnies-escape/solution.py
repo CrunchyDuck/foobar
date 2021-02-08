@@ -1,10 +1,11 @@
 class MapNode:
-    def __init__(self):
-        self.src_distance = 0  # How far from the end, if all walls were ignored.
-        self.dest_distance = 0  # Jumps from the starting position.
+    def __init__(self, is_wall, x, y):
+        self.pos = [x, y]  # debug thing
+        self.src_distance = 0  # Jumps from the starting position.
+        self.dest_distance = x + y  # How far from the end, if all walls were ignored.
         self.closed = False
+        self.wall = is_wall
         self.neighbours = []
-        self.pos = []  # debug thing
 
 
 def in_list_bounds(list_size, pos):
@@ -35,7 +36,8 @@ def solution(map):
     src_y = map_size["height"]
 
     open_set = []
-    map_grid = [[MapNode() for _ in range(map_size["height"])] for _ in range(map_size["width"])]
+
+    map_grid = [[MapNode(map[y][x], x, y) for y in range(map_size["height"])] for x in range(map_size["width"])]
 
     neighbour_pos = [
         [1, 0],   # Right
@@ -70,15 +72,18 @@ def solution(map):
         open_set.remove(current_node)
         current_node.closed = True
 
-        neighbour_distance = current_node.distance + 1  # How far the neighbour node is from src.
+        src_distance = current_node.distance + 1  # How far the neighbour node is from src.
         for neighbour in current_node.neighbours:
-            if neighbour.closed: continue
+            if neighbour.closed or neighbour.wall: continue
 
             neighbour_open = neighbour in open_set
-            if not neighbour_open or neighbour.distance > neighbour_distance:
+            if not neighbour_open or neighbour.distance > src_distance:
                 neighbour.distance = current_node.distance + 1
                 if not neighbour_open:
                     open_set.append(neighbour)
+
+
+    print "nya"
 
 
 

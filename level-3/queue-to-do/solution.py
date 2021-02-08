@@ -2,6 +2,7 @@ def f(a):
     res = [a, 1, a + 1, 0]
     return res[a % 4]
 
+
 def get_xor(start, end):
     """
     Gets the XOR of a range of numbers from start to end.
@@ -16,6 +17,7 @@ def get_xor(start, end):
         The XOR of all of the numbers in the range.
     """
     return f(end) ^ f(start - 1)
+
 
 def solution(start, length):
     """
