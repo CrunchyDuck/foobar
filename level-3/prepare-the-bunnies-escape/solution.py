@@ -1,8 +1,28 @@
 from heapq import heapify, heappop, heappush
 import cProfile
 
+
 class MapNode:
+    """
+    A representation of a square in a grid.
+
+    Attributes:
+        pos - [x, y] position of this node on the map.
+        src_distance - Distance from the start position using best path
+        dest_distance - Distance from the end position, ignoring all walls.
+        cell_cost - Higher cost makes a cell less desirable.
+        closed - Whether this node have been directly updated.
+        opened - Whether this node has been opened already.
+        wall - Whether this node is a wall.
+        neighbours - A list of nodes neighbouring this node.
+    """
     def __init__(self, is_wall, x, y):
+        """
+        Arguments:
+            is_wall - If this cell is a wall.
+            x - x position in maze.
+            y - y position in maze.
+        """
         self.pos = [x, y]
         self.src_distance = 1  # Jumps from the starting position.
         self.dest_distance = x + y  # How far from the end, if all walls were ignored.
@@ -17,6 +37,11 @@ class MapNode:
         return cmp(self.cell_cost, other.cell_cost)
 
     def set_distance(self, dist):
+        """
+        Updates the distance and cost of a cell.
+        Arguments:
+            dist - Distance from the source cell.
+        """
         self.src_distance = dist
         # For some reason this value is always off by 1.
         # But, since all values are incorrect, it makes it correct again! Huzzah!
@@ -43,15 +68,24 @@ def in_list_bounds(list_size, pos):
 
 
 def generate_map_grid(map, width, height):
-    print width
-    print height
+    """
+    Creates a map grid filled with map notes.
+    Returns:
+        mapgrid[x][y]
+    """
     return [[MapNode(map[y][x], x, y) for y in range(height)] for x in range(width)]
 
 
 def fill_neighbours(map_grid, neighbour_positions):
+    """
+    Takes in a map_grid filled with MapNodes, and updates the position and neighbours of each node.
+    Arguments:
+        map_grid - A grid of [x][y] filled with MapNodes
+        neighbour_positions - An array of [[x,y],...] with the position of neighbours of each cell.
+    """
     neighbour_pos = neighbour_positions
     width = len(map_grid)
-    height = len(map_grid)
+    height = len(map_grid[0])
 
     for y in range(height):
         for x in range(width):
@@ -68,6 +102,14 @@ def fill_neighbours(map_grid, neighbour_positions):
 
 
 def solution(map):
+    """
+    Calculates the shortest path in a maze when allowed to remove one wall.
+    Arguments:
+        map[y][x] - A 2D array representing a map of the maze.
+
+    Returns:
+        (int) Shortest path when able to remove one wall.
+    """
     map_size = {
         "height": len(map),
         "width": len(map[0])
@@ -165,89 +207,10 @@ def solution(map):
     return best_speed
 
 
-def solution2(map):
-    map_size = {
-        "height": len(map),
-        "width": len(map[0])
-    }
-    dest_x = dest_y = 0
-    src_x = map_size["width"] - 1
-    src_y = map_size["height"] - 1
-
-    neighbour_pos = [
-        [1, 0],  # Right
-        [-1, 0],  # Left
-        [0, 1],  # Down
-        [0, -1],  # Up
-    ]
-    map_grid = generate_map_grid(map, map_size["width"], map_size["height"])
-    fill_neighbours(map_grid, neighbour_pos)
-
-    wall_heap = []
-    start_node = map_grid[src_x][src_y]
-    start_node.opened = True
-    open_set = [start_node]
-    target_node = map_grid[dest_x][dest_y]
-
-    # Fill wall heap
-    for x in range(len(map_grid)):
-        for y in range(len(map_grid[x])):
-            obj = map_grid[x][y]
-            if obj.wall:
-                wall_heap.append(obj)
-
-
-
-    best_speed = 9999999
-    lowest_cost = 9999999
-    heapify(wall_heap)
-    wall_heap_size = len(wall_heap)
-
-    # Regenerate the map with the target wall removed, and check the new best speed.
-    # This new iteration is done in standard A*.
-    for i in range(wall_heap_size):
-        wall = heappop(wall_heap)
-        # if wall.cell_cost >= lowest_cost:
-        #     return best_speed
-
-        map_modified = generate_map_grid(map, map_size["width"], map_size["height"])
-        fill_neighbours(map_modified, neighbour_pos)
-        wall_pos = wall.pos
-        map_modified[wall_pos[0]][wall_pos[1]].wall = False
-        target_node = map_modified[dest_x][dest_y]
-
-        open_set = [map_modified[src_x][src_y]]
-
-        while len(open_set):
-            current_node = heappop(open_set)
-            current_node.closed = True
-
-            if current_node.pos == [0, 0]:
-                # Check if the best speed on this is faster.
-                speed = target_node.src_distance
-                if speed < best_speed:
-                    best_speed = speed
-                    lowest_cost = target_node.cell_cost
-                break
-
-            src_distance = current_node.src_distance + 1
-            for neighbour in current_node.neighbours:
-                if neighbour.wall or neighbour.closed:
-                    continue
-
-                if not neighbour.opened or neighbour.src_distance > src_distance:
-                    neighbour.set_distance(src_distance)
-                    if not neighbour.opened:
-                        neighbour.opened = True
-                        heappush(open_set, neighbour)
-
-    return best_speed
-
-
-# solution([[0, 1, 1, 0],
-#           [0, 0, 0, 1],
-#           [1, 1, 0, 0],
-#           [1, 1, 1, 0]])
+print solution([[0, 1, 1, 0],
+          [0, 0, 0, 1],
+          [1, 1, 0, 0],
+          [1, 1, 1, 0]])
 
 print solution([
     [0, 0],
@@ -263,26 +226,28 @@ print solution([
     [0, 0]
 ])
 
-# print solution([
-#     [0,0,0,1,0,0],
-#     [1,1,1,1,0,0],
-#     [0,0,0,1,0,0],
-#     [0,0,0,1,0,0],
-#     [0,0,0,1,0,0],
-#     [0,0,0,1,0,0]
-# ])
+print solution([
+    [0,0,0,1,0,0],
+    [1,1,1,1,0,0],
+    [0,0,0,1,0,0],
+    [0,0,0,1,0,0],
+    [0,0,0,1,0,0],
+    [0,0,0,1,0,0]
+])
 
-# solution([[0, 0, 0, 0, 0, 0],
-#           [1, 1, 1, 1, 1, 0],
-#           [0, 0, 0, 0, 0, 0],
-#           [0, 1, 1, 1, 1, 1],
-#           [0, 1, 1, 1, 1, 1],
-#           [0, 0, 0, 0, 0, 0]])
-#print solution([[0]])
+print solution([[0, 0, 0, 0, 0, 0],
+          [1, 1, 1, 1, 1, 0],
+          [0, 0, 0, 0, 0, 0],
+          [0, 1, 1, 1, 1, 1],
+          [0, 1, 1, 1, 1, 1],
+          [0, 0, 0, 0, 0, 0]])
+
+print solution([[0]])
+
 
 # chunky.
 def test():
-    print solution2(
+    print solution(
     [
     [0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0],
     [0,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,0,1,0],
@@ -304,6 +269,7 @@ def test():
     [0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,1,0],
     [0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0]
     ]
-    )
+)
 
-#cProfile.run("test()", sort="cumtime")
+
+cProfile.run("test()", sort="cumtime")
