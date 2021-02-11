@@ -56,7 +56,7 @@ def factors(n):
                 ([i, n//i] for i in range(1, int(n**0.5) + 1) if n % i == 0)))
 
 
-def index_lucky_children(lucky_list):
+def index_lucky_children_it(lucky_list):
     """
     Fills the children entries in a LuckyNumbers list.
     Arguments:
@@ -69,21 +69,48 @@ def index_lucky_children(lucky_list):
                 num.children.append(lucky_num)
 
 
+def index_lucky_children(lucky_list):
+    """
+    Fills the children entries in a LuckyNumbers list.
+    Arguments:
+        lucky_list - A list of LuckyNumbers, sorted from smallest to largest.
+    """
+    for i in range(len(lucky_list) - 1, 0, -1):  # Lucky indices list in reverse
+        num = lucky_list[i]
+
+
+def create_lucky_number_dict(lucky_number_list):
+    """
+    Converts a list of lucky numbers into a dictionary ordered as {number: [object]}
+    This preserves the amount of times an item appears in the list,
+    while still functioning at the speed of a lookup table.
+    """
+    lucky_number_dict = {}
+    for lucky_number in lucky_number_list:
+        number = lucky_number.number
+        if number not in lucky_number_dict:
+            lucky_number_dict[number] = [lucky_number]
+        else:
+            lucky_number_dict[number].append(lucky_number)
+
+    return lucky_number_dict
+
+
 def solution(l):
-    lucky_number_chain = [LuckyNumber(x) for x in l]
-    index_lucky_children(lucky_number_chain)
+    lucky_number_list = [LuckyNumber(x) for x in l]
+    lucky_number_dict = create_lucky_number_dict(lucky_number_list)
     lucky_triples = []
 
-    for lucky_number in reversed(lucky_number_chain):  # Going from top down handles duplicate numbers.
+    for lucky_number in lucky_number_list:  # Going from top down handles duplicate numbers.
         lucky_triples += lucky_number.get_unique_chains(3)
 
     lucky_triples = set(lucky_triples)
     return len(lucky_triples)
 
 
-print len(factors(999999))
 test_list = [1 for _ in range(2000)]
 #print solution(test_list)
-print solution([1, 2, 3, 4, 5, 6])
-print solution([1, 1, 1])
-print solution([1, 1, 1, 1, 1, 1, 1])
+
+# print solution([1, 2, 3, 4, 5, 6])
+# print solution([1, 1, 1])
+# print solution([1, 1, 1, 1, 1, 1, 1])
