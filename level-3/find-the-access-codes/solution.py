@@ -1,6 +1,7 @@
 from functools import reduce
 import cProfile
 
+
 class LuckyNumber:
     """
     Stores numbers in the lock access code that are factors of this number.
@@ -61,19 +62,11 @@ def index_lucky_children(lucky_list):
     Arguments:
         lucky_list - A list of LuckyNumbers, sorted from smallest to largest.
     """
-    # Not more possible children in list.
-    if len(lucky_list) == 1:
-        return
-
-    # Get children for the top element
-    top = lucky_list[-1]
-    all_but_top = lucky_list[:-1]
-    for lucky_num in all_but_top:
-        if lucky_num.number in top.factors:
-            top.children.append(lucky_num)
-
-    # Get children for the element below current top.
-    index_lucky_children(all_but_top)
+    for i in range(len(lucky_list)-1, 0, -1):  # Lucky indices list in reverse
+        num = lucky_list[i]
+        for lucky_num in lucky_list[:i]:
+            if lucky_num.number in num.factors:
+                num.children.append(lucky_num)
 
 
 def solution(l):
@@ -88,6 +81,9 @@ def solution(l):
     return len(lucky_triples)
 
 
-#cProfile.run("factors_test()")
-test_list = [999999 for _ in range(2000)]
-print solution(test_list)
+print len(factors(999999))
+test_list = [1 for _ in range(2000)]
+#print solution(test_list)
+print solution([1, 2, 3, 4, 5, 6])
+print solution([1, 1, 1])
+print solution([1, 1, 1, 1, 1, 1, 1])

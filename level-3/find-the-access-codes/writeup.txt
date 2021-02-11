@@ -17,5 +17,12 @@ This was the worst possible result. With this result I have no indication of wha
 Maybe the numbers it gives me aren't ordered. It'd make sense with the lore of the task.
 The task mentions that they're in order, so that's not it...
 Time to test random ideas.
+
 [1, 1, 1, 1, 1, 1] returned incorrect results! Good, that's a problem I can solve.
-Solved, and they still failed. 
+Solved, and they still failed.
+Maybe the code doesn't scale up well? I provided the worse case it could have; a list of 999999 2000 times.
+At the tap of my run key, I received 2005 lines of errors. Wonderful news.
+It turns out a bit of recursion I plugged in to be fancy really didn't scale up well, and was bumping against python's recursion limit. Honestly, I'm quite glad it did so that google didn't have to see that awful mess.
+
+Removed the troubling recursion, but this has revealed my code doesn't scale well with list size. A new method would have to be used to build the chain.
+As the largest number 999999 only had 64 factors, it would be much faster to check if these factors exist in the list, rather than to check if the whole list is a factor.
