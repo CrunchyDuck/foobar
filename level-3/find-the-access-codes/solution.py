@@ -69,14 +69,26 @@ def index_lucky_children_it(lucky_list):
                 num.children.append(lucky_num)
 
 
-def index_lucky_children(lucky_list):
+def index_lucky_children(lucky_list, lucky_dict):
     """
     Fills the children entries in a LuckyNumbers list.
     Arguments:
         lucky_list - A list of LuckyNumbers, sorted from smallest to largest.
+        lucky_dict - A dictionary that will be consumed to generate the children for lucky_list.
     """
-    for i in range(len(lucky_list) - 1, 0, -1):  # Lucky indices list in reverse
-        num = lucky_list[i]
+    for num in reversed(lucky_list):
+        try:
+            my_bracket = lucky_dict[num.number][:-1]
+            del lucky_dict[num.number]  # Removes this dictionary entry to prevent infinite loops.
+            num.children += my_bracket
+        except KeyError:
+            # Another instance of this number has already been indexed.
+            continue
+
+        for factor in num.factors:
+            if factor in lucky_dict:
+                num.children += lucky_dict[factor]
+        #num.children.remove(num)  # Remove itself as a child so that it cannot match itself.
 
 
 def create_lucky_number_dict(lucky_number_list):
@@ -99,6 +111,7 @@ def create_lucky_number_dict(lucky_number_list):
 def solution(l):
     lucky_number_list = [LuckyNumber(x) for x in l]
     lucky_number_dict = create_lucky_number_dict(lucky_number_list)
+    index_lucky_children(lucky_number_list, lucky_number_dict)
     lucky_triples = []
 
     for lucky_number in lucky_number_list:  # Going from top down handles duplicate numbers.
@@ -108,9 +121,11 @@ def solution(l):
     return len(lucky_triples)
 
 
-test_list = [1 for _ in range(2000)]
-#print solution(test_list)
+test_list = [x for x in range(2000, 1)]
+print solution(test_list)
+#print solution([1, 2, 3, 4, 5, 6, 6])
+
 
 # print solution([1, 2, 3, 4, 5, 6])
 # print solution([1, 1, 1])
-# print solution([1, 1, 1, 1, 1, 1, 1])
+print solution([1, 1, 1, 1, 1, 1, 1])
