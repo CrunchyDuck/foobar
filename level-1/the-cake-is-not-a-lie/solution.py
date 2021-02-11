@@ -59,4 +59,4 @@ def solution(s):
 print solution("abcabc")
 print solution("abcabcabcabcabcabcabcabc")
 print solution("bcabca")
-print solution("abcabc")
+print solution("abccba")
