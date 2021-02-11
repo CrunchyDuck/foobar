@@ -18,7 +18,7 @@ class LuckyNumber:
     def __init__(self, number, index):
         self.number = number
         self.index = index
-        self.factors = factors(number)
+        self.factors = []
         self.children = []
 
     def __repr__(self):
@@ -45,6 +45,15 @@ class LuckyNumber:
 
         return chains
 
+    def get_unique_chain_num(self, chain_length):
+        if chain_length <= 1:
+            return 1
+
+        chain_num = 0
+        for child in self.children:
+            chain_num += child.get_unique_chain_num(chain_length-1)
+        return chain_num
+
 
 def factors(n):
     """
@@ -59,17 +68,29 @@ def factors(n):
 
 def index_lucky_children(lucky_list, lucky_dict):
     """
-    Fills the children entries in a LuckyNumbers list.
+    Fills the children and factors variables in a LuckyNumbers list.
     Arguments:
         lucky_list - A list of LuckyNumbers
         lucky_dict - A dictionary that will be consumed to generate the children for lucky_list.
     """
+    factor_dict = {}
+
     for num in reversed(lucky_list):
-        factor_entries = []  # All numbers that would match, before considering indices.
+        # Create or fetch factors
+        if num.number not in factor_dict:
+            f = factors(num.number)
+            num.factors = f
+            factor_dict[num.number] = f
+        else:
+            num.factors = factor_dict[num.number]
+
+        # All numbers that would match, before considering indices.
+        factor_entries = []
         for factor in num.factors:
             if factor in lucky_dict:
                 factor_entries += lucky_dict[factor]
 
+        # Numbers that match considering indices.
         my_index = num.index
         for entry in factor_entries:
             if entry.index < my_index:
@@ -100,23 +121,34 @@ def solution(l):
 
     lucky_number_dict = create_lucky_number_dict(lucky_number_list)
     index_lucky_children(lucky_number_list, lucky_number_dict)
-    lucky_triples = []
+    lucky_triple_count = 0
 
     for lucky_number in reversed(lucky_number_list):  # Going from top down handles duplicate numbers.
-        lucky_triples += lucky_number.get_unique_chains(3)
+        lucky_triple_count += lucky_number.get_unique_chain_num(3)
 
-    #lucky_triples = set(lucky_triples)
-    return len(lucky_triples)
+    return lucky_triple_count
 
 
-#cProfile.run("solution_test()", sort="cumtime")
+def solution_test():
+    test_list_2 = []
+    for i in range(400):
+        test_list_2 += [(i + 1) * 50 for _ in range(5)]
+    solution(test_list_2)
 
-#test_list = [999999 for _ in range(1, 2000)]
+
+cProfile.run("solution_test()", sort="cumtime")
+
+# test_list = [999999 for _ in range(1, 2000)]
+# test_list_2 = []
+# for i in range(20):
+#     test_list_2 += [(i + 1) * 50 for _ in range(5)]
+# print test_list_2
+
 #print solution(test_list)
 #print solution([1, 2, 3, 4, 5, 6])
 #print solution([6, 5, 4, 3, 2, 1])
 
 # print solution([1, 5, 9])
 # print solution([1, 2, 3, 4, 5, 6])
-print solution([1, 1, 1, 1])
+#print solution([1, 1, 1, 1])
 #print solution([1, 1, 1, 1, 1, 1, 1])
