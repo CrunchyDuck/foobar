@@ -66,6 +66,21 @@ def factors(n):
                 ([i, n//i] for i in range(1, int(n**0.5) + 1) if n % i == 0)))
 
 
+def triangle_number_sum(n):
+    """
+    Used to calculate a the sum of triangle numbers up n.
+    This is used as repeated values will scale very quickly, and take a long time to calculate.
+    It increases as: 1, 4, 10, 20, 35... Which is the sum of triangle numbers.
+
+    Arguments:
+        n - Triangle number to count up to
+
+    Returns:
+        Sum of triangle numbers up to a value.
+    """
+    return (n * (n + 1) * (n + 2)) / 6
+
+
 def index_lucky_children(lucky_list, lucky_dict):
     """
     Fills the children and factors variables in a LuckyNumbers list.
@@ -125,18 +140,18 @@ def solution(l):
 
     for lucky_number in reversed(lucky_number_list):  # Going from top down handles duplicate numbers.
         lucky_triple_count += lucky_number.get_unique_chain_num(3)
+        #lucky_triple_count += len(lucky_number.get_unique_chains(3))
 
     return lucky_triple_count
 
 
 def solution_test():
-    test_list_2 = []
-    for i in range(400):
-        test_list_2 += [(i + 1) * 50 for _ in range(5)]
-    solution(test_list_2)
+    test_list = [999999 for x in range(999999-2000, 999999-1300)]
+    print solution(test_list)
 
 
-cProfile.run("solution_test()", sort="cumtime")
+
+#cProfile.run("solution_test()", sort="cumtime")
 
 # test_list = [999999 for _ in range(1, 2000)]
 # test_list_2 = []
@@ -151,4 +166,11 @@ cProfile.run("solution_test()", sort="cumtime")
 # print solution([1, 5, 9])
 # print solution([1, 2, 3, 4, 5, 6])
 #print solution([1, 1, 1, 1])
+#print solution([1, 1, 1, 1, 1])
+#print solution([1, 1, 1, 1, 1, 1])
 #print solution([1, 1, 1, 1, 1, 1, 1])
+#
+# num = 0
+# for i in range(2000):
+#     num += triangle_number(i)
+# print num
