@@ -1,0 +1,21 @@
+I took a couple day break before approaching this because I'd really been overworking myself. I was also getting anxious about the rising difficulty, figuring I'm going to meet my end somewhat soon.
+
+After requesting this I saw similarities between this question and previous ones, a sort of amalgamation of the maze task and the gear task.
+I knew that I'd want to do a similar trick I did in the maze puzzle, and "lay the field" so the speak, by calculating the factors of all the numbers. Then, I'd draw relationships between the numbers to find some pattern.
+I settled on a fairly basic child system. A LuckyNumber object would hold its number, the positive factors of that number, and then a list of children LuckyNumbers. These children would be other LuckyNumbers in the same list that are factors of this number.
+To give an example, in this list [1, 2, 3, 4, 5, 6], LuckyNumber 6 would have the children 3, 2 and 1. LuckyNumber 3 would only have the child 1.
+This allows me to construct chains from the top down, starting at 6, going to 3, and ending at 1. Much easier to visualize than a pure math answer.
+
+Since numbers could go up to 999999 I knew I needed a fast way to find the factors of a number, and with some research I found this: https://stackoverflow.com/questions/6800193/what-is-the-most-efficient-way-of-finding-all-the-factors-of-a-number-in-python
+I won't pretend to fully understand how this works, but profiling showed it was leagues faster than any method I could create alone.
+It returns its answers as a set, which I was a little skeptical would make checking if a number is in the set slow, but in my research I found that sets are actually designed exactly for this, using hashing to nigh immediately find if an entry exists.
+
+While working on this I noticed that the task contradicted itself, unfortunately. It states that numbers must follow i < j < k, yet one of the examples it provides contradicts this ([1, 1, 1] = 1)
+
+I confidently submitted my answer to be verified. Only to have all of the hidden tests fail, and all visible ones pass.
+This was the worst possible result. With this result I have no indication of what the problem is. I can't check if it's a performance issue, if it's an error in my code, anything.
+Maybe the numbers it gives me aren't ordered. It'd make sense with the lore of the task.
+The task mentions that they're in order, so that's not it...
+Time to test random ideas.
+[1, 1, 1, 1, 1, 1] returned incorrect results! Good, that's a problem I can solve.
+Solved, and they still failed. 
