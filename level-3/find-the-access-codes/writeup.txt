@@ -26,3 +26,18 @@ It turns out a bit of recursion I plugged in to be fancy really didn't scale up 
 
 Removed the troubling recursion, but this has revealed my code doesn't scale well with list size. A new method would have to be used to build the chain.
 As the largest number 999999 only had 64 factors, it would be much faster to check if these factors exist in the list, rather than to check if the whole list is a factor.
+I went through a lot of different ideas on how to do this, and came up with a few.
+But it was never enough, the checks always failed. I'd tested my program to its limit, and it had excelled, yet it would not pass.
+
+This whole time something felt off about how I was solving this. The fact only the examples worked. That no matter how much I optimized, it wasn't passing. That one of the examples contradicted the details of the task...
+I noticed that they never specified the triples had to be unique, but what they had explained didn't seem like it left room for combinations that weren't unique.
+I must have reread a dozen times, but after yet another failure I decided to try again...
+
+... There.... There was no contradiction.
+I had completely misread one small sentence:
+(...) "lucky triples" of (li, lj, lk) where the list indices meet the requirement i < j < k.
+I thought they meant the size of the number had to be smaller, not the position of the number in the list.
+My GOD.
+This uproots EVERYTHING.
+I have to change most of my code to solve for this.
+I've spent 10 hours solving for a related, but different problem!

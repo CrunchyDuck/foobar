@@ -15,8 +15,9 @@ class LuckyNumber:
         factors - All of the possible positive factors of this number.
         children - A list of LuckyNumber objects that are factors of this object.
     """
-    def __init__(self, number):
+    def __init__(self, number, index):
         self.number = number
+        self.index = index
         self.factors = factors(number)
         self.children = []
 
@@ -34,15 +35,15 @@ class LuckyNumber:
             Set of all unique chains that can be constructed.
         """
         if chain_length == 1:
-            return ((self.number,),)
+            return [[self.number]]
 
         chains = []
         for num in self.children:
             children_chains = num.get_unique_chains(chain_length-1)
             for child_chain in children_chains:
-                chains.append((self.number,) + child_chain)
+                chains.append([self.number] + child_chain)
 
-        return set(chains)
+        return chains
 
 
 def factors(n):
@@ -56,39 +57,23 @@ def factors(n):
                 ([i, n//i] for i in range(1, int(n**0.5) + 1) if n % i == 0)))
 
 
-def index_lucky_children_it(lucky_list):
-    """
-    Fills the children entries in a LuckyNumbers list.
-    Arguments:
-        lucky_list - A list of LuckyNumbers, sorted from smallest to largest.
-    """
-    for i in range(len(lucky_list)-1, 0, -1):  # Lucky indices list in reverse
-        num = lucky_list[i]
-        for lucky_num in lucky_list[:i]:
-            if lucky_num.number in num.factors:
-                num.children.append(lucky_num)
-
-
 def index_lucky_children(lucky_list, lucky_dict):
     """
     Fills the children entries in a LuckyNumbers list.
     Arguments:
-        lucky_list - A list of LuckyNumbers, sorted from smallest to largest.
+        lucky_list - A list of LuckyNumbers
         lucky_dict - A dictionary that will be consumed to generate the children for lucky_list.
     """
     for num in reversed(lucky_list):
-        try:
-            my_bracket = lucky_dict[num.number][:-1]
-            del lucky_dict[num.number]  # Removes this dictionary entry to prevent infinite loops.
-            num.children += my_bracket
-        except KeyError:
-            # Another instance of this number has already been indexed.
-            continue
-
+        factor_entries = []  # All numbers that would match, before considering indices.
         for factor in num.factors:
             if factor in lucky_dict:
-                num.children += lucky_dict[factor]
-        #num.children.remove(num)  # Remove itself as a child so that it cannot match itself.
+                factor_entries += lucky_dict[factor]
+
+        my_index = num.index
+        for entry in factor_entries:
+            if entry.index < my_index:
+                num.children.append(entry)
 
 
 def create_lucky_number_dict(lucky_number_list):
@@ -109,23 +94,29 @@ def create_lucky_number_dict(lucky_number_list):
 
 
 def solution(l):
-    lucky_number_list = [LuckyNumber(x) for x in l]
+    lucky_number_list = []
+    for i in range(len(l)):
+        lucky_number_list.append(LuckyNumber(l[i], i))
+
     lucky_number_dict = create_lucky_number_dict(lucky_number_list)
     index_lucky_children(lucky_number_list, lucky_number_dict)
     lucky_triples = []
 
-    for lucky_number in lucky_number_list:  # Going from top down handles duplicate numbers.
+    for lucky_number in reversed(lucky_number_list):  # Going from top down handles duplicate numbers.
         lucky_triples += lucky_number.get_unique_chains(3)
 
-    lucky_triples = set(lucky_triples)
+    #lucky_triples = set(lucky_triples)
     return len(lucky_triples)
 
 
-test_list = [x for x in range(2000, 1)]
-print solution(test_list)
-#print solution([1, 2, 3, 4, 5, 6, 6])
+#cProfile.run("solution_test()", sort="cumtime")
 
+#test_list = [999999 for _ in range(1, 2000)]
+#print solution(test_list)
+#print solution([1, 2, 3, 4, 5, 6])
+#print solution([6, 5, 4, 3, 2, 1])
 
+# print solution([1, 5, 9])
 # print solution([1, 2, 3, 4, 5, 6])
-# print solution([1, 1, 1])
-print solution([1, 1, 1, 1, 1, 1, 1])
+print solution([1, 1, 1, 1])
+#print solution([1, 1, 1, 1, 1, 1, 1])
