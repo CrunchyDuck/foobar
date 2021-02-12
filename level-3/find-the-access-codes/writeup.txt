@@ -41,3 +41,61 @@ My GOD.
 This uproots EVERYTHING.
 I have to change most of my code to solve for this.
 I've spent 10 hours solving for a related, but different problem!
+
+After another hour or two of programming, I had rearranged my code, and it now passed four out of five of the tests. Hm... The last one must be a performance issue, I thought.
+I devised a new system, with new methods of figuring out the number of combinations.
+With these new optimizations, my code was able to perform over 50 times faster while using a fraction of the RAM.
+But it wasn't enough.
+That one test continued to fail. It couldn't be a performance issue with how fast the code was now, surely... It didn't perform well if a number was repeated hundreds of times, but surely that wasn't in the test.
+It had to be a bug in my code. But there's nothing I could imagine causing issues. 80% of the tests pass. I've tested all I can imagine. What could be causing this...
+
+Maybe it is still a performance issue. That glaring issue still exists in my code; The untouched, unconquered enemy; Repeating numbers causing massive growth.
+Trying to solve this was just causing more problems though...
+
+Maybe I needed to approach this completely differently. I need to find a way to better utilize the calculations of previous numbers.
+
+I can't completely ignore the previous numbers in case there's a new combination, but I can avoid calculating combinations that will have already been tested.
+If I record how many previous numbers divide into y, then anything y divides will have all possible combinations of previous divisions and y.
+Instead of the object seeking out the combinations, the combinations can come to the object. For this to work, instead of going from the top, I'll want to go from the bottom, to minimize the amount of calculations I have to perform.
+
+
+
+
+
+Rant I had to a friend:
+
+For about 9 hours I had misread the fucking question and was wondering why most of the tests were failing.
+However due to the total lack of feedback of why they failed, I had no clue and was running in circles till I realized they got me on a fucking technicality in the question.
+So, I solved that. Great job guys, ice cream all around, right?
+
+Ha. ha. Ha.
+it's just getting started.
+
+Now, I pass 4 out of 5 tests. 
+4 out of 5, consistently.
+I was like okay, my code is pretty poorly optimized, I can understand that. It uses like ~10GB of memory at the worst times, can take ~2 minutes at the worst times.
+So I optimize.
+It fails.
+I optimize more.
+It fails.
+I optimize more.
+it fails.
+
+It's only ever that one question, and I start to wonder... Am I sure it's a performance issue?
+I try to add a delay of like ~10 seconds to the code to ensure things time out.
+Nothing new fails... But I've never gotten a wrong answer from my code.
+At my current point, my code at worst finishes in 0.4 seconds.
+It also uses at most 150 MB or RAM.
+
+I have distilled this program to the point of perfection
+AND THAT ONE TEST WILL NOT PASS.
+I'm convinced it cannot be a performance issue considering it is using an obscene amount of tricks to calculate an obscene amount of things in a fraction of a second. 
+So, I hunt down a bug in my code, right?
+If only.
+The calculations it is crunching are huge. 
+As in, one that takes it less than 1 CPU cycle will take a human around 10 seconds to solve.
+To solve for the most complex things it has would take lifetimes.
+So I have no way to verify that my answers are right
+it doesn't seem to be a performance issue
+And 4/5 tests I've put it up against say it's fine.
+I am at a complete loss at this point.

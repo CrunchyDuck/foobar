@@ -17,6 +17,7 @@ class LuckyNumber:
     """
     def __init__(self, number, index):
         self.number = number
+        self.doubles = 0  # Number of doubles that came before this.
         self.index = index
         self.factors = []
         self.children = []
@@ -130,28 +131,32 @@ def create_lucky_number_dict(lucky_number_list):
 
 
 def solution(l):
+    lucky_triple_count = 0
     lucky_number_list = []
     for i in range(len(l)):
         lucky_number_list.append(LuckyNumber(l[i], i))
 
-    lucky_number_dict = create_lucky_number_dict(lucky_number_list)
-    index_lucky_children(lucky_number_list, lucky_number_dict)
-    lucky_triple_count = 0
-
-    for lucky_number in reversed(lucky_number_list):  # Going from top down handles duplicate numbers.
-        lucky_triple_count += lucky_number.get_unique_chain_num(3)
-        #lucky_triple_count += len(lucky_number.get_unique_chains(3))
+    for i in range(len(lucky_number_list)):
+        current_lucky_number = lucky_number_list[i]
+        for j in range(i):  # Index all doubles this number can create alone.
+            target_num = lucky_number_list[j]
+            if not current_lucky_number.number % target_num.number:
+                # If the target num had any doubles,
+                # they will combine with the current num to make triples.
+                current_lucky_number.doubles += 1
+                lucky_triple_count += target_num.doubles
 
     return lucky_triple_count
 
 
 def solution_test():
-    test_list = [999999 for x in range(999999-2000, 999999-1300)]
+    #test_list = [999999 for x in range(999999-2000, 999999-0)]
+    test_list = [1, 1, 1, 1, 1, 1]
     print solution(test_list)
 
 
 
-#cProfile.run("solution_test()", sort="cumtime")
+cProfile.run("solution_test()", sort="cumtime")
 
 # test_list = [999999 for _ in range(1, 2000)]
 # test_list_2 = []
@@ -164,11 +169,12 @@ def solution_test():
 #print solution([6, 5, 4, 3, 2, 1])
 
 # print solution([1, 5, 9])
-# print solution([1, 2, 3, 4, 5, 6])
-#print solution([1, 1, 1, 1])
-#print solution([1, 1, 1, 1, 1])
-#print solution([1, 1, 1, 1, 1, 1])
-#print solution([1, 1, 1, 1, 1, 1, 1])
+#print solution([1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6])
+# print solution([1, 1, 1])
+# print solution([1, 1, 1, 1])
+# print solution([1, 1, 1, 1, 1])
+# print solution([1, 1, 1, 1, 1, 1])
+# print solution([1, 1, 1, 1, 1, 1, 1])
 #
 # num = 0
 # for i in range(2000):
