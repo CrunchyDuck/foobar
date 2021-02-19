@@ -21,7 +21,7 @@ class LuckyNumber:
 
 def solution(l):
     """
-    Scan an access code for lucky triples to crack the LAMBCHOP doomsday device.
+    Scan an access code for lucky triples to crack the LAMBCHOP doomsday device's code.
 
     Arguments:
         l: List of access codes to scan for lucky triples

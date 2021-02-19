@@ -1,0 +1,9 @@
+(After finishing level 3)
+The code is strong with this one...
+You can now share your solutions with a Google recruiter!
+If you opt in, Google Staffing may reach out to you regarding career opportunities, events, and programs.
+We will use your information in accordance with our Applicant and Candidate Privacy Policy.
+[#1] [Yes [N]o [A]sk me later:]
+[Y]es [N]o [A]sk me later: A
+Response: contact postponed.
+To share your progress at any time, use the recruitme command. 

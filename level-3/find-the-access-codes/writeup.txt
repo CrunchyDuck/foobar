@@ -58,6 +58,9 @@ I can't completely ignore the previous numbers in case there's a new combination
 If I record how many previous numbers divide into y, then anything y divides will have all possible combinations of previous divisions and y.
 Instead of the object seeking out the combinations, the combinations can come to the object. For this to work, instead of going from the top, I'll want to go from the bottom, to minimize the amount of calculations I have to perform.
 
+Solving for this new mindset, my code functioned perfectly; Faster and more efficient than before, it surpassed all tasks with speed, and I was finally done with this challenge.
+
+
 
 
 

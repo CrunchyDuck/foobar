@@ -1,0 +1,22 @@
+After the last task, I received the offer to send my contact details to Google in the event they might hire me.
+I spent a week or so thinking on this. Questioning if I was good enough, if my lack of work and education background would have me discarded.
+I questioned whether I even wanted this job - My passions lie in game development and problem solving. How did I know this would satisfy me?
+
+After a week of considering what I wanted I went through and filled out the form. Surprisingly, they didn't request a resume, only an optional Curriculum Vitae.
+After filling it out, I figured it was time I get to work on the next task. I requested it and immediately realized it had given me two weeks this time, not one. Odd.
+Reading the question I think I understood better why. It was frankly, confusing. I wasn't quite sure what it wanted of me. I sat on it for a day, thinking occasionally about it to comprehend what they requested.
+The day after I decided to finally tackle it. I was fairly lost on what to do, not even sure how to figure the question out by hand.
+
+I worked through a few examples, writing down hypotheses, but pretty quickly it became clear doing this by hand would use the next month of my life.
+I though about how I could even make a brute-force algorithm to calculate this. How do I know it's right? Well, when the union of any num_required clears all doors, but no less than num_required can.
+I made a function to check if an answer is correct, but actually testing all possible combinations is impossibly slow.
+
+I took a look at the solved answers again. If I could figure out how many rooms an answer would have, this would drastically reduce the number of combinations I had to check.
+While researching how I could even generate these combinations, I came across something called Pascal's triangle. It looked cool, and a tonne of cool things you could do with it.
+
+As I looked over all of the hand-solved solutions, I wondered what the pattern is.
+(3, 3) = 3, (4, 3) = 6, (5, 3) = 10... Hold on, I've seen this pattern before.
+I searched the sequence, and as I suspected, it was the list of triangle numbers.
+Expanding this backwards, I could determine that (n, 2) would be natural numbers, and (n, 1) would always be 1.
+If this followed, I could calculate the number of doors required for any set by looking at the given position on Pascal's triangle.
+I threw this together and it verified all of the existing answers I had.
