@@ -11,6 +11,10 @@ I worked through a few examples, writing down hypotheses, but pretty quickly it 
 I though about how I could even make a brute-force algorithm to calculate this. How do I know it's right? Well, when the union of any num_required clears all doors, but no less than num_required can.
 I made a function to check if an answer is correct, but actually testing all possible combinations is impossibly slow.
 
+In my mind, there were two things I needed to figure out in order to drastically speed this up:
+How many doors are there?
+How many keys does each bunny have?
+
 I took a look at the solved answers again. If I could figure out how many rooms an answer would have, this would drastically reduce the number of combinations I had to check.
 While researching how I could even generate these combinations, I came across something called Pascal's triangle. It looked cool, and a tonne of cool things you could do with it.
 
@@ -19,4 +23,5 @@ As I looked over all of the hand-solved solutions, I wondered what the pattern i
 I searched the sequence, and as I suspected, it was the list of triangle numbers.
 Expanding this backwards, I could determine that (n, 2) would be natural numbers, and (n, 1) would always be 1.
 If this followed, I could calculate the number of doors required for any set by looking at the given position on Pascal's triangle.
-I threw this together and it verified all of the existing answers I had.
+I threw this together and it verified all of the existing answers I had. This allowed me to solve one of the two big questions I had. Though even with this optimization, it was still too slow to reasonably get the answer to any question.
+I needed to find more before I could start generating solutions to compare against.

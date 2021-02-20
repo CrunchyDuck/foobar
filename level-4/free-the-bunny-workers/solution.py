@@ -63,42 +63,45 @@ def flatten_gen(generator):
 
 
 def solution(num_bunnies, num_required):
-    if num_required == 1:
+    # short circuits
+    if num_required == 0:  # I don't actually know what I should be returning for this one.
+        return [[] for _ in range(num_required)]
+    elif num_required == 1:
         return [[0] for _ in range(num_required)]
     elif num_required == num_bunnies:
         return [[x] for x in range(num_required)]
 
-    door_num = num_required
-    while True:
-        # Create all possible permutations this number of doors can have.
-        doors = [x for x in range(door_num)]
-        bunny_keys = 1  # How many keys each bunny has.
+    door_num = num_doors(num_bunnies, num_required)
+    doors = [x for x in range(door_num)]
+    bunny_keys = 1  # How many keys each bunny has.
 
-        while bunny_keys <= door_num:
-            combins = flatten_gen(combinations(doors, bunny_keys))
-            if len(combins) < num_bunnies:
-                break
-            for bunny_set in combinations(combins, num_bunnies):
-                result = test_union(num_required, bunny_set, doors)
-                if result[0]:
-                    return result
-                else:
-                    pass #print result
-            bunny_keys += 1
+    while bunny_keys <= door_num:  # If this breaks due to condition, something has gone wrong.
+        combins = flatten_gen(combinations(doors, bunny_keys))
+        if len(combins) < num_bunnies:
+            break
+        for bunny_set in combinations(combins, num_bunnies):
+            result = test_union(num_required, bunny_set, doors)
+            if result[0]:
+                return result
+            else:
+                pass #print result
+        bunny_keys += 1
 
-        door_num += 1
-
-        if door_num > 10:
-            return False
+    raise Exception("Could not find a combination of bunny keys.\n"
+                    "num bunnies:%s\n"
+                    "num required:%s\n"
+                    "door_num:%s" %
+                    (num_bunnies, num_required, door_num))
 
 
 def tst():
     print solution(9, 2)
 
-print num_doors(5, 3)
+
+#print num_doors(5, 3)
 
 #cProfile.run("tst()", sort="cumtime")
 #test_union(2, ((0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)))
 #print solution(2, 1)
 #print solution(4, 4)
-#print solution(5, 3)
+print solution(5, 3)
