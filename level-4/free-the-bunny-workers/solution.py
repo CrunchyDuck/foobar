@@ -79,40 +79,24 @@ def flatten_gen(generator):
 
 
 def solution(num_bunnies, num_required):
-    # short circuits
-    if num_required == 0:  # I don't actually know what I should be returning for this one.
-        return [[] for _ in range(num_bunnies)]
-    elif num_required == 1:
-        return [[0] for _ in range(num_bunnies)]
-    elif num_required == num_bunnies:
-        return [[x] for x in range(num_bunnies)]
+    bunny_keys = [[] for _ in range(num_bunnies)]
 
-    door_num = num_doors(num_bunnies, num_required)
-    doors = [x for x in range(door_num)]
-    bunny_keys = 1  # How many keys each bunny has.
-
-    combins = flatten_gen(combinations(doors, bunny_keys))
-    for bunny_set in combinations(combins, num_bunnies):
-            result = test_union(num_required, bunny_set, doors)
-            if result[0]:
-                return result
-            else:
-                pass #print result
-
-    raise Exception("Could not find a combination of bunny keys.\n"
-                    "num bunnies:%s\n"
-                    "num required:%s\n"
-                    "door_num:%s" %
-                    (num_bunnies, num_required, door_num))
+    door_keys = num_bunnies + 1 - num_required  # Number of keys to each door.
+    i = 0
+    for door_to_bunnies in combinations(range(num_bunnies), door_keys):
+        for bunny in door_to_bunnies:
+            bunny_keys[bunny].append(i)
+        i += 1
+    return bunny_keys
 
 
 def tst():
-    print solution(4, 3)
+    pass #print solution(4, 2)
 
 
+#print tst()
 #print num_doors(5, 3)
-
-cProfile.run("tst()", sort="cumtime")
+#cProfile.run("tst()", sort="cumtime")
 #test_union(2, ((0, 1, 2), (0, 1, 3), (0, 2, 3), (1, 2, 3)))
 #print solution(4, 3)
 #print solution(4, 4)
