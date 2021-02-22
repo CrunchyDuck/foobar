@@ -7,9 +7,7 @@ class RoomNode:
         self.in_room = 0  # Bunnies currently in this cell.
         self.room_capacity = 0  # How many bunnies this room can store. Defined by how many can flow out per tick. Allows dead ends/loops to fill up.
         self.start_room = False  # If this room is a start node.
-        self.last_in = 0
-        self.last_out = 0
-        self.last_flow = 0  # How many bunnies entered this cell last flood tick
+        self.this_flow_in = 0  # How many bunnies entered this cell last flood tick
         self.map = map  # The map this node belongs to.
         self.pathed = False  # If a path has been mapped to here.
 
@@ -47,6 +45,7 @@ class RoomNode:
         """
         Pulls bunnies in from adjacent rooms.
         """
+        self.this_flow_in = 0  # How many bunnies entered this room this tick.
         for from_room in self.from_nodes:
             target_room = from_room[0]
             corridor = from_room[1]
@@ -54,6 +53,7 @@ class RoomNode:
             bunnies_to_go = min(target_room.in_room, corridor)  # Flow the amount this corridor can support, or all in this room.
             target_room.in_room -= bunnies_to_go
             self.in_room += bunnies_to_go
+            self.this_flow_in += bunnies_to_go
 
     def __repr__(self):
         return "Node %s with %s" % (self.node_num, self.in_room)
@@ -68,6 +68,9 @@ class RoomMap:
         self.path = self.generate_path()  # The rooms to flow from, in order.
 
         self.tick = 0  # How many ticks of simulation have passed.
+        self.exit_flow_amount = 0  # How many bunnies entered the exit last tick.
+        self.last_flow_amount = 0  # How many bunnies moved on the map last tick.
+        self.equilibrium = False  # If the system has reached its end state.
 
     def generate_map(self, entrances, exits, path):
         # Create the list of empty rooms
@@ -97,7 +100,7 @@ class RoomMap:
         Creates a path, traced from the exit node to the start node.
         """
         path = []
-        open_nodes = self.exit_rooms
+        open_nodes = list(self.exit_rooms)  # Copy the existing list.
 
         for node in open_nodes:
             path.append(node)
@@ -118,13 +121,29 @@ class RoomMap:
         When simulating, we perform a breadth first search from the exit node until all input nodes are "flowed"
         This ensures that nodes that do not connect to the exit are ignored.
         """
-        for room in self.entrance_rooms:  # Fill entrance rooms such that they will never run out of bunnies.
+        self.tick += 1
+
+        # Fill entrance rooms such that they will never run out of bunnies.
+        for room in self.entrance_rooms:
             room.in_room = room.room_capacity * 2
 
+        # Make each node flow.
+        this_flow_amount = 0  # How many bunnies moved on the map this tick.
         for node in self.path:
-            self.tick += 1
             node.flow_in()
+            this_flow_amount += node.this_flow_in
 
+        # Check flow amount on exit nodes.
+        self.exit_flow_amount = 0
+        for exit_room in self.exit_rooms:
+            self.exit_flow_amount += exit_room.this_flow_in
+
+        # Evaluate if the system is in equilibrium.
+        if this_flow_amount == self.last_flow_amount:
+            self.equilibrium = True
+        else:
+            self.equilibrium = False
+            self.last_flow_amount = this_flow_amount
 
 
 def solution(entrances, exits, path):
@@ -132,24 +151,26 @@ def solution(entrances, exits, path):
     room_map = RoomMap(entrances, exits, path)
 
     # Flood structure.
-    while True:
+    while not room_map.equilibrium:
         room_map.update()
 
+    return room_map.exit_flow_amount
 
-# solution([0], [3],
-#          [[0, 1, 0, 0],
-#           [0, 0, 1, 1],
-#           [1, 0, 0, 0],
-#           [0, 0, 50, 0]])
 
-solution([0, 1], [4, 5],
+print solution([0], [3],  # answer: 1
+         [[0, 1, 0, 0],
+          [0, 0, 1, 1],
+          [1, 0, 0, 0],
+          [0, 0, 50, 0]])
+
+print solution([0, 1], [4, 5],  # answer: 16
          [[0, 0, 4, 6, 0, 0],
           [0, 0, 5, 2, 0, 0],
           [0, 0, 0, 0, 4, 4],
           [0, 0, 0, 0, 6, 6],
           [0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0]])
-solution([0], [3],
+print solution([0], [3],  # answer: 6
          [[0, 7, 0, 0],
           [0, 0, 6, 0],
           [0, 0, 0, 8],
