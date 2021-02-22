@@ -1,0 +1,19 @@
+It's become a bit of a theme that when I take request a task, I can't understand what it is I need to solve, I take a day off and think about it in between shooting bad guys or something.
+After fulfilling my required amount of avoiding the task, I went back and realized it was asking me to do wo-uld fit nicely on a directional graph. After arming myself with a pencil and some paper, I wrote out the examples and came up with what system I could use, and what challenges I'd face.
+
+I'd want nodes that knew how many bunnies were inside of it, and what corridors they could travel. The "start" nodes would be given infinite bunnies.
+I worried maybe there'd be some combination of rooms and corridors that might mean that taking one path would always get less to the end than taking the other. Maybe a corridor would infinitely loop to itself, or one node would overflow while another starved.
+I couldn't find a way to prove that in my mind though, so I settled on a hypothesis: If I just flood the grid for long enough, the corridors would eventually reach a state of equilibruim, where the maximum amount is being pushed to the exit, no matter which paths are being taken.
+
+So, I came up with my plan for how to build this:
+Rooms could store infinite bunnies.
+Rooms would attempt to push their bunnies out of every corridor they have access to, sequentially.
+Rooms will keep track of how many bunnies entered them last tick. If this number doesn't change between ticks, the room is said to be in "equilibrium"
+If no rooms change for a tick, the system is in equilibrium, and we will be able to find our answer.
+
+Some optimizations I thought up:
+Much like A*, I only really want to run nodes that have something going on, so I'd maintain an "open" list.
+
+
+As I was working on this though, I had an idea for how my system might get into an infinite loop, and wrote it down. Indeed I'd proven it to myself, and needed a way to stop this.
+I figured I could add a cap to how many bunnies a room could store, defined by how many could flow out. Once it had that many, it would refuse any more flowing in, with exits having no cap.
