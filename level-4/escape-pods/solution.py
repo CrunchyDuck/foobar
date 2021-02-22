@@ -1,15 +1,48 @@
 class RoomNode:
-    def __init__(self, map, node_num):
-        self.node_num = node_num  # Debugging purposes
+    """
+    Represents a room and all of the corridors connected to it.
+    Attributes:
+        map - The map this node belongs to.
+        self.pathed - If this room has had a path drawn to it from an exit.
 
-        self.to_nodes = []  # list of lists where [#][0] is the node and [#][1] is the size of this hall.
-        self.from_nodes = []  # List of nodes that flow into this node.
-        self.in_room = 0  # Bunnies currently in this cell.
-        self.room_capacity = 0  # How many bunnies this room can store. Defined by how many can flow out per tick. Allows dead ends/loops to fill up.
-        self.start_room = False  # If this room is a start node.
-        self.this_flow_in = 0  # How many bunnies entered this cell last flood tick
-        self.map = map  # The map this node belongs to.
-        self.pathed = False  # If a path has been mapped to here.
+        to_nodes - Nodes this object flows into. [#][0] = node, [#][1] = corridor size
+        from_nodes - Nodes that flow into this object. Same structure as to_nodes
+
+        in_room - Bunnies currently stored in this room.
+        room_capacity - How many bunnies this room can store.
+        room_left - How many more bunnies can fit in this room. (property)
+
+        this_flow_in - How many bunnies entered this cell last tick.
+        this_flow_in_tick - Which tick this_flow_in was calculated.
+
+        start_room - If this room is a start room.
+        end_room - If this room is an end room.
+
+    Methods:
+        make_corridor(other, size)
+            Creates a corridor from this room to another.
+        flow_out()
+            Makes this room push as much out to connected rooms as it can.
+        flow_in()
+            Sucks in as many bunnies from connected rooms as it can.
+        update_tick()
+            Resets this_flow_in and updates this_flow_in_tick.
+    """
+    def __init__(self, room_map):
+        self.map = room_map
+        self.pathed = False
+
+        self.to_nodes = []
+        self.from_nodes = []
+
+        self.in_room = 0
+        self.room_capacity = 0  # Defined by how many bunnies can flow out per tick. Allows dead ends/loops to fill up.
+
+        self.start_room = False
+        self.end_room = False
+
+        self.this_flow_in = 0
+        self.this_flow_in_tick = 0
 
     @property
     def room_left(self):
@@ -17,7 +50,7 @@ class RoomNode:
 
     def make_corridor(self, other, size):
         """
-        Create a corridor between two rooms. Corridors are one-way.
+        Create a corridor from this room to another. Corridors are one-way.
 
         Arguments:
             other - The node to make an edge to.
@@ -27,41 +60,59 @@ class RoomNode:
         other.from_nodes.append([self, size])
 
     def flow_out(self):
-        """Push as many bunnies out of connected corridors as possible."""
+        """
+        Push as many bunnies out of connected corridors as possible.
+        This is only used by start nodes, which contain infinite bunnies.
+        This is done so that loops or inefficient paths will eventually be blocked.
+        """
         for to_room in self.to_nodes:
             target_room = to_room[0]
             corridor = to_room[1]
+            target_room.update_tick()
 
-            bunnies_to_go = max(min(min(self.in_room, corridor), target_room.room_left), 0)
+            bunnies_to_go = max(min(self.in_room, corridor), 0)
             self.in_room -= bunnies_to_go
             target_room.in_room += bunnies_to_go
-
-            # Add uncalculated rooms to open list.
-            if target_room.last_out != self.map.tick:
-                self.map.open_rooms.append(target_room)
-                target_room.last_out = self.map.tick
+            target_room.this_flow_in += bunnies_to_go
 
     def flow_in(self):
         """
         Pulls bunnies in from adjacent rooms.
+        Rooms cannot pull from start or end rooms, as these are handled manually.
         """
-        self.this_flow_in = 0  # How many bunnies entered this room this tick.
+        self.update_tick()
         for from_room in self.from_nodes:
             target_room = from_room[0]
             corridor = from_room[1]
+            # Start rooms flow out at the start of each frame, thus they don't need to be taken from again.
+            if target_room.start_room or target_room.end_room:
+                continue
 
-            bunnies_to_go = min(target_room.in_room, corridor)  # Flow the amount this corridor can support, or all in this room.
+            bunnies_to_go = min(target_room.in_room, corridor)
+            if not self.end_room:
+                bunnies_to_go = min(bunnies_to_go, self.room_left)
+            bunnies_to_go = max(bunnies_to_go, 0)
+
             target_room.in_room -= bunnies_to_go
             self.in_room += bunnies_to_go
             self.this_flow_in += bunnies_to_go
 
-    def __repr__(self):
-        return "Node %s with %s" % (self.node_num, self.in_room)
+    def update_tick(self):
+        """
+        Reset counters and updates the current tick if applicable.
+        """
+        if self.this_flow_in_tick != self.map.tick:
+            self.this_flow_in = 0  # How many bunnies entered this room this tick.
+            self.this_flow_in_tick = self.map.tick
 
 
 class RoomMap:
+    """
+    Represents a collection of RoomNodes.
+    Attributes:
+        room_map
+    """
     def __init__(self, entrances, exits, path):
-        self.room_map = []
         self.entrance_rooms = []
         self.exit_rooms = []
         self.generate_map(entrances, exits, path)
@@ -74,24 +125,25 @@ class RoomMap:
 
     def generate_map(self, entrances, exits, path):
         # Create the list of empty rooms
-        self.room_map = [RoomNode(self, i) for i in range(len(path))]
+        room_map = [RoomNode(self) for _ in range(len(path))]
 
         # Mark exit and entrance nodes.
         for num in exits:
-            room = self.room_map[num]
+            room = room_map[num]
             self.exit_rooms.append(room)
             room.pathed = True  # These are manually added and don't need to be algorithmically found.
+            room.end_room = True
         for num in entrances:
-            room = self.room_map[num]
+            room = room_map[num]
             self.entrance_rooms.append(room)
             room.start_room = True
 
         # Create corridors
         for i, room_corridors in enumerate(path):
-            start_room = self.room_map[i]
+            start_room = room_map[i]
             for j, corridor_size in enumerate(room_corridors):
                 if corridor_size > 0:
-                    end_room = self.room_map[j]
+                    end_room = room_map[j]
                     start_room.make_corridor(end_room, corridor_size)
                     start_room.room_capacity += corridor_size
 
@@ -103,9 +155,9 @@ class RoomMap:
         open_nodes = list(self.exit_rooms)  # Copy the existing list.
 
         for node in open_nodes:
-            path.append(node)
-            if node.start_room:  # Don't map nodes that push to start rooms.
+            if node.start_room:  # The start nodes do not need to be mapped, as they never pull inward.
                 continue
+            path.append(node)
             for connected_node in node.from_nodes:
                 connected_node = connected_node[0]
                 if not connected_node.pathed:
@@ -117,18 +169,21 @@ class RoomMap:
     def update(self):
         """
         Runs a tick of simulation on the map.
+        If there is no change in the flow of water, equilibrium=True.
 
         When simulating, we perform a breadth first search from the exit node until all input nodes are "flowed"
         This ensures that nodes that do not connect to the exit are ignored.
         """
         self.tick += 1
-
-        # Fill entrance rooms such that they will never run out of bunnies.
-        for room in self.entrance_rooms:
-            room.in_room = room.room_capacity * 2
-
-        # Make each node flow.
         this_flow_amount = 0  # How many bunnies moved on the map this tick.
+
+        for room in self.entrance_rooms:
+            # Flow from the entrances outwards before everything else.
+            # This ensures loops/dead-ends will fill up and reach equilibrium.
+            room.in_room = room.room_capacity * 2  # Fill entrance rooms such that they will never run out of bunnies.
+            room.flow_out()
+
+        # Make each mapped node flow.
         for node in self.path:
             node.flow_in()
             this_flow_amount += node.this_flow_in
@@ -162,7 +217,6 @@ print solution([0], [3],  # answer: 1
           [0, 0, 1, 1],
           [1, 0, 0, 0],
           [0, 0, 50, 0]])
-
 print solution([0, 1], [4, 5],  # answer: 16
          [[0, 0, 4, 6, 0, 0],
           [0, 0, 5, 2, 0, 0],
@@ -175,3 +229,19 @@ print solution([0], [3],  # answer: 6
           [0, 0, 6, 0],
           [0, 0, 0, 8],
           [9, 0, 0, 0]])
+print solution([0], [2],  # answer: 1
+          [[0, 5, 0],
+           [5, 0, 1],
+           [0, 0, 0]])
+print solution([0, 1], [5],  # answer: 7
+           [[0, 0, 10, 0, 0, 0],
+            [0, 0, 0, 5, 0, 0],
+            [0, 0, 0, 0, 0, 2],
+            [0, 0, 5, 0, 5, 0],
+            [0, 0, 0, 0, 0, 5],
+            [0, 0, 0, 0, 0, 0]])
+print solution([0], [3],  # answer: 1
+            [[0, 1, 0, 0],
+             [0, 0, 1, 0],
+             [0, 1, 0, 3],
+             [0, 0, 2, 0]])

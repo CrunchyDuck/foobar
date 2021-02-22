@@ -20,6 +20,22 @@ As I was working on this though, I had an idea for how my system might get into 
 I figured I could add a cap to how many bunnies a room could store, defined by how many could flow out. Once it had that many, it would refuse any more flowing in, with exits having no cap. But this seemed prone to error.
 
 Instead, I decided to flip the system on its head: Instead of flowing from the start to the end, I could flow from the end to the start in reverse. Essentially, performing a breadth first search and pulling the water towards the end.
-This allowed me to ignore infinite loops, as if something did not flow towards the end it was ignored, and solved the question of what order to perform the flow in.
+This allowed me to ignore side paths, as if something did not flow towards the end it was ignored, and solved the question of what order to perform the flow in.
 Implementing this and testing it out seemed to show it solving the problems as I wanted, so now I just needed to implement a stopping function, and an evaluation function.
 I decided I could total up how many bunnies flowed each frame, and if the numbers matched, the system was in equilibrium. I wasn't sure this fully worked, but it was the simplest answer I could think up to define equilibrium.
+
+My examples seemed to work fine, and it ran at a lightning fast pace.
+I submitted it, verified it, and finally we were-
+Oh, one of the tests failed.
+As the cumulative time of the tests was about 3 seconds there was no way it was a performance issue. I suspected it might be an issue with a type of looping: Nodes connected to the output could "steal" from the output, and this similar issue could happen elsewhere. The input would also allow things to flow into it, which was not supposed to happen.
+For a long time, I couldn't think of a way to fix this without coming up with an entirely new method. As the "infinite" source of bunnies was the last thing to be pulled from, it meant any loop would always happen, and there's no way I can think of to detect these loops and verify that they don't add to the output.
+
+I couldn't exactly explain why, but I tried to stick to my water analogy a bit harder. If the problem was that water wasn't flowing into the system, I would force it in. If loops happened, I would block them.
+I implemented the maximum capacity for rooms, forced the start to always flow, and allowed the start nodes to bypass the capacity of rooms. This was modelled after water pressure in a system.
+This would mean that all paths except those that lead to the exit would block up, and the maximum amount would be flowing out.
+
+I implemented this, it solved many of the issues I had seen, but it still didn't past the final test...
+I had no more ideas for a while. I was incredibly anxious that I was going to fail. Suck cost fallacy encouraged me to stick to this method.
+I modelled many situations. Maybe..
+I found one small bug, allowing water to flow out of the exit room. I fixed this and resubmitted it, sure that such a niche issue wouldn't appear.
+It apparently had, as I'd passed all tests.
