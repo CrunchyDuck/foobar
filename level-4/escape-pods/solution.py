@@ -109,19 +109,33 @@ class RoomNode:
 class RoomMap:
     """
     Represents a collection of RoomNodes.
+
     Attributes:
-        room_map
+        entrance_rooms - Rooms bunnies originate from
+        exit_rooms - Rooms bunnies should travel to.
+        path - The rooms that will have their flow_in function run, in order.
+
+        tick - The current tick of simulation.
+        exit_flow_amount - How many bunnies entered the exit room this tick.
+        last_flow_amount - How many bunnies move on the whole map last tick.
+        equilibrium - If the system has reached a stable point, with maximum flow out.
+
+    Methods:
+        generate_map - Creates all of the RoomNodes and the connections between them.
+        generate_path - Create a path from exit to start.
+        update - Run a tick of simulation
     """
     def __init__(self, entrances, exits, path):
         self.entrance_rooms = []
         self.exit_rooms = []
-        self.generate_map(entrances, exits, path)
-        self.path = self.generate_path()  # The rooms to flow from, in order.
 
-        self.tick = 0  # How many ticks of simulation have passed.
-        self.exit_flow_amount = 0  # How many bunnies entered the exit last tick.
-        self.last_flow_amount = 0  # How many bunnies moved on the map last tick.
-        self.equilibrium = False  # If the system has reached its end state.
+        self.generate_map(entrances, exits, path)
+        self.path = self.generate_path()
+
+        self.tick = 0
+        self.exit_flow_amount = 0
+        self.last_flow_amount = 0
+        self.equilibrium = False
 
     def generate_map(self, entrances, exits, path):
         # Create the list of empty rooms
